@@ -21,6 +21,7 @@ const config = {
         "bg-header": "#000000",
         "text-color": "#C9D1D9",
         "body-color": "#0D1117",
+        "red-color": "#FF0000",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

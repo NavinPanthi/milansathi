@@ -1,11 +1,30 @@
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
+import { AiFillGoogleCircle } from "react-icons/ai";
+import Link from "next/link";
+
+const socialMediaIcons = [
+  { name: "Facebook", icon: <FaFacebook size="1em" /> },
+  { name: "Twitter", icon: <FaTwitter size="1em" /> },
+  { name: "Instagram", icon: <FaInstagram size="1em" /> },
+  { name: "Google", icon: <AiFillGoogleCircle size="1em" /> },
+];
 
 export default function Footer() {
   return (
-    <footer className="bg-bg-header shadow-lg text-text-color">
-      <div className="mx-auto flex max-w-7xl px-4 py-6 sm:px-6 lg:px-8 justify-between">
-        <Image src="/logo1.png" alt="" height="100" width="100" />
+    <footer className="shadow-lg bg-bg-header text-text-color mt-20 flex flex-col items-center justify-center">
+      <div className="text-black w-full flex mt-5 items-center justify-center flex-row">
+        {socialMediaIcons.map((socialMedia, index) => (
+          <Link
+            href="#"
+            key={index}
+            className="size-6 rounded-full bg-white flex items-center justify-center mx-[6px]"
+          >
+            {socialMedia.icon}
+          </Link>
+        ))}
+      </div>
+      <div className="flex justify-center px-2 sm:px-6 py-4 items-center">
+        Copyright &#169; 2022 | Designed By MilanSathi
       </div>
     </footer>
   );

@@ -15,11 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="bg-body-color ">
+    <html lang="en" className="bg-body-color flex-1 h-full">
       <head>
         <link rel="icon" href="/pu" />
       </head>
-      <body className={`${plusJakartaSans.className} bg-body-color text-white`}>
+      <body className={`${plusJakartaSans.className} bg-body-color tracking-wide text-white min-h-[100vh]`}>
         {children}
       </body>
     </html>

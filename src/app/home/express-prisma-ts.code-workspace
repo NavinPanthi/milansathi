@@ -1,11 +1,14 @@
 {
   "folders": [
-	{
-		"path": "../../../../../GitHub/express-prisma-ts"
-	},
-	{
-		"path": "../../.."
-	}
-],
+    {
+      "path": "../../../../../GitHub/express-prisma-ts"
+    },
+    {
+      "path": "../../.."
+    },
+    {
+      "path": "../../../../../Nextjs Development/bhoklayo-web-app"
+    }
+  ],
   "settings": {}
 }

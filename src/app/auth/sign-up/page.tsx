@@ -1,11 +1,12 @@
 import Image from "next/image";
-import LogInForm from "@/components/auth/login-form";
 import Footer from "@/components/home/footer";
-export default function SignIn() {
+import SignUpForm from "@/components/auth/signup-form";
+
+export default function SignUp() {
   return (
     <>
       <div className="flex item-center  justify-center   min-h-[90vh] overflow-y-hidden ">
-        <div className="  my-auto bg-transparent rounded-xl w-96 h-[450px] ">
+        <div className="  my-auto bg-transparent rounded-xl w-96  ">
           <Image
             src="/logo1.png"
             className="lottie rounded-t-xl"
@@ -14,7 +15,7 @@ export default function SignIn() {
             alt="dede"
           />
           <div className="p-4 py-6 bg-bg-header bg-opacity-50 rounded-b-xl">
-            <LogInForm />
+            <SignUpForm />
           </div>
         </div>
       </div>
