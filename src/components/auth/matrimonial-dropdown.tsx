@@ -1,32 +1,35 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { HiChevronUpDown } from "react-icons/hi2";
 import { IoIosSearch } from "react-icons/io";
 import { Input } from "@/components/ui/input";
+
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type matrimonialStatus = {
   id: number;
   title: string;
 };
 
-export function MatrimonialDropdown(id: any) {
+export function MatrimonialDropdown({
+  maritalStatusId,
+  setMaritalStatusId,
+}: any) {
   const [matrimonialStatus, setMatrimonialStatus] = useState([]);
   const [loading, setLoading] = useState(true); // State to track loading status
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [filteredMatrimonialStatus, setFilteredMatrimonialStatus] = useState(
     []
   );
-
-  const triggerPopup = () => {
-    setIsPopupOpen(!isPopupOpen);
+  const handleMatrimonialStatusSelect = (value: number) => {
+    setMaritalStatusId(value);
   };
+
   const handleSearch = (e: any) => {
     let searchTerm = e.target.value.trim().toLowerCase();
     const wordsArray = searchTerm.split(/\s+/);
@@ -65,19 +68,19 @@ export function MatrimonialDropdown(id: any) {
   }, []);
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="bg-bg-body hover:bg-bg-body relative text-white/75 hover:text-white/50 flex justify-center items-center"
-          onClick={triggerPopup}
-        >
-          <p>Select marital status</p>
-          <HiChevronUpDown size="1.2em" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[352px] p-0 relative overflow-y-scroll no-scrollbar h-[300px] bg-bg-header border border-white/25">
-        <div className=" flex fixed p-2 w-[99%] justify-center z-10 bg-bg-header items-center">
+    <Select
+      // value={maritalStatusId.toString()}
+      onValueChange={(value) => handleMatrimonialStatusSelect(parseInt(value))}
+    >
+      <SelectTrigger className="bg-bg-body hover:bg-bg-body relative text-white/75 hover:text-white/50 flex items-center">
+        <SelectValue
+          className="text-white flex justify-start"
+          placeholder="Select marital status"
+        />
+      </SelectTrigger>
+
+      <SelectContent className="w-[352px] p-0 relative overflow-y-scroll no-scrollbar h-[300px] bg-bg-header border border-white/25">
+        <div className=" flex top-0 fixed p-2 w-[99%] justify-center z-10 bg-bg-header items-center">
           <Input
             type="text"
             className="w-full text-white relative border-white/25"
@@ -90,7 +93,7 @@ export function MatrimonialDropdown(id: any) {
         </div>
 
         <div className={` text-white mt-12 p-2`}>
-          {filteredMatrimonialStatus.length === 0 ? (
+          {filteredMatrimonialStatus.length === 0 || loading ? (
             <p>Loading....</p>
           ) : (
             <>
@@ -98,16 +101,22 @@ export function MatrimonialDropdown(id: any) {
                 (matrimonialStatus: matrimonialStatus) => (
                   <div
                     key={matrimonialStatus.id}
-                    className={`text-sm py-2 px-2 hover:bg-white/20 cursor-pointer rounded-lg `}
+                    className={`text-sm  rounded-lg `}
                   >
-                    {matrimonialStatus.title}
+                    {/* {matrimonialStatus.title} */}
+                    <SelectItem
+                      className="cursor-pointer"
+                      value={matrimonialStatus.id.toString()}
+                    >
+                      {matrimonialStatus.title}
+                    </SelectItem>
                   </div>
                 )
               )}
             </>
           )}
         </div>
-      </PopoverContent>
-    </Popover>
+      </SelectContent>
+    </Select>
   );
 }

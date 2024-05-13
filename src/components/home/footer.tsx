@@ -11,7 +11,7 @@ const socialMediaIcons = [
 
 export default function Footer() {
   return (
-    <footer className="shadow-lg bg-bg-header text-text-color mt-20 flex flex-col items-center justify-center">
+    <footer className="shadow-lg bg-bg-header text-text-color flex flex-col items-center justify-center">
       <div className="text-black w-full flex mt-5 items-center justify-center flex-row">
         {socialMediaIcons.map((socialMedia, index) => (
           <Link

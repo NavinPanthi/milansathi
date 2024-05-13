@@ -15,7 +15,7 @@ export default function Header() {
             width="150"
           />
         </Link>
-        <Button variant="variant" className="px-10 text-lg">
+        <Button variant="null" className="px-10 text-lg">
           <Link href="/auth/sign-in">Log In</Link>
         </Button>
       </div>

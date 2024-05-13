@@ -90,3 +90,14 @@
 .person-1 {
   mix-blend-mode: lighten;
 }
+.react-datepicker__input-container input {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+
+  border: 1px solid white;
+  color: #ffffff;
+  padding: 20px 12px;
+  height: 36px;
+  border-radius: 6px;
+  font-size: 12px;
+}
