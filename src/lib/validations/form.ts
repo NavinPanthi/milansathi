@@ -5,17 +5,17 @@ export const signinFormSchema = z.object({
   password: z.string().min(8),
 });
 export const signupFormSchema = z.object({
-  firstname: z
+  firstName: z
     .string()
     .min(1, { message: "Firstname is required" })
     .min(3, { message: "Firstname must be at least 3 char long" }),
-  lastname: z
+  lastName: z
     .string()
     .min(1, { message: "Last name is required" })
     .min(3, { message: "Last name must be at least 3 char long" }),
   maritalStatusId: z.number().positive("Marital Status is required"),
   gender: z.string().min(1, { message: "Gender is required" }),
-  dob: z.date().refine(
+  dateOfBirth: z.date().refine(
     (value) => {
       const ageDifMs = Date.now() - value.getTime();
       const ageDate = new Date(ageDifMs);

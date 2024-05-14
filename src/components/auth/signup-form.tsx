@@ -16,9 +16,11 @@ import { signupActions } from "@/store/signupSlice";
 import Link from "next/link";
 import { signupFormSchema } from "@/lib/validations/form";
 import z from "zod";
+import axios from "axios";
+import Loading from "@/app/loading";
 type User = {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   maritalStatusId: number;
   gender: string;
   dob: Date;
@@ -37,8 +39,8 @@ export default function SignUpForm() {
   const [communityId, setCommunityId] = useState(0);
   const [motherTongueId, setMotherTongueId] = useState(0);
   const [religionId, setReligionId] = useState(0);
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -59,26 +61,39 @@ export default function SignUpForm() {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [dobError, setDobError] = useState("");
   const [genderError, setGenderError] = useState("");
-  let validatedData;
+  const [isLoading, setIsLoading] = useState(false);
+  let validatedData: any;
+  let updatedValidatedData: any;
   const validateForm = () => {
+    let simpleDateOfBirth: any;
+
     try {
       // Validate the form data against the schema
+
       const formData = {
-        firstname,
-        lastname,
-        maritalStatusId,
+        email,
+        password,
+        firstName,
+        lastName,
+        dateOfBirth: dob,
         gender,
-        dob,
         religionId,
         cityId,
         countryId,
         motherTongueId,
         communityId,
-        email,
-        password,
+        maritalStatusId,
       };
       validatedData = signupFormSchema.parse(formData);
-      console.log(validatedData);
+      if (dob !== undefined) {
+        simpleDateOfBirth = new Date(dob).toISOString().split("T")[0];
+      }
+      validatedData.dateOfBirth = simpleDateOfBirth;
+      updatedValidatedData = {
+        ...validatedData,
+        bio: "User's bio goes here",
+        image: "image url goes here",
+      };
       setMaritalStatusIdError("");
       setCityIdError("");
       setCountryIdError("");
@@ -142,7 +157,6 @@ export default function SignUpForm() {
       } else {
         console.error("An unexpected error occurred:", error);
       }
-
       return false; // Validation failed
     }
   };
@@ -155,37 +169,50 @@ export default function SignUpForm() {
     return true;
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log("Form submitted partially!");
+    setIsLoading(true);
     if (validateForm() && comparePassword()) {
-      console.log("Form submitted successfully!");
+      console.log(updatedValidatedData.dateOfBirth);
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/users`,
+          updatedValidatedData
+        );
+        if (response.data.status) {
+          console.log(response.data.data);
+        } else {
+          console.log("Error", "Something went wrong");
+        }
+      } catch (error: any) {
+        console.log(error);
+      }
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    console.log(
-      "gender and dob, maritalstatusid",
-      gender,
-      dob,
-      maritalStatusId,
-      countryId,
-      cityId,
-      communityId,
-      motherTongueId,
-      religionId
-    );
-  }, [
-    gender,
-    dob,
-    maritalStatusId,
-    countryId,
-    cityId,
-    communityId,
-    religionId,
-    motherTongueId,
-  ]);
+  // useEffect(() => {
+  //   console.log(
+  //     "gender and dob, maritalstatusid",
+  //     gender,
+  //     dob,
+  //     maritalStatusId,
+  //     countryId,
+  //     cityId,
+  //     communityId,
+  //     motherTongueId,
+  //     religionId
+  //   );
+  // }, [
+  //   gender,
+  //   dob,
+  //   maritalStatusId,
+  //   countryId,
+  //   cityId,
+  //   communityId,
+  //   religionId,
+  //   motherTongueId,
+  // ]);
 
   return (
     <form onSubmit={handleSignUp} className="flex gap-4 flex-col ">
@@ -198,7 +225,7 @@ export default function SignUpForm() {
                 type="text"
                 placeholder="First name"
                 onChange={(e) => {
-                  setFirstname(e.target.value);
+                  setFirstName(e.target.value);
                 }}
               />
               {firstnameError && (
@@ -213,8 +240,7 @@ export default function SignUpForm() {
                 type="text"
                 placeholder="Last name"
                 onChange={(e) => {
-                  setLastname(e.target.value);
-                  setLastnameError(""); // Clear the error when the user types
+                  setLastName(e.target.value);
                 }}
               />
               {lastnameError && (
@@ -369,12 +395,18 @@ export default function SignUpForm() {
           onClick={handleSignUp}
           className=" !cursor-pointer h-full w-full bg-red-color/50 hover:bg-red-color/45 text-white"
         >
-          {/* <Link
+          <Link
             className="w-full"
-            href={signupDatas ? "/auth/sign-in-" : "/auth/sign-up-"}
-          > */}
-          Submit
-          {/* </Link> */}
+            href={updatedValidatedData ? "/auth/sign-in-" : "/auth/sign-up-"}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loading /> <p>Submitting</p>
+              </div>
+            ) : (
+              "Submit"
+            )}
+          </Link>
         </Button>
       </div>
     </form>

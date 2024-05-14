@@ -1,7 +1,8 @@
+"use client";
 import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 import { AiFillGoogleCircle } from "react-icons/ai";
 import Link from "next/link";
-
+import { toast } from "sonner";
 const socialMediaIcons = [
   { name: "Facebook", icon: <FaFacebook size="1em" /> },
   { name: "Twitter", icon: <FaTwitter size="1em" /> },
@@ -23,7 +24,12 @@ export default function Footer() {
           </Link>
         ))}
       </div>
-      <div className="flex justify-center px-2 sm:px-6 py-4 items-center">
+      <div
+        className="flex justify-center px-2 sm:px-6 py-4 items-center"
+        onClick={() => {
+          toast.success("Event has been created.");
+        }}
+      >
         Copyright &#169; 2022 | Designed By MilanSathi
       </div>
     </footer>

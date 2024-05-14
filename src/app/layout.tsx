@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import StoreProvider from "./StoreProvider";
-
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
@@ -25,6 +25,7 @@ export default function RootLayout({
         className={`${plusJakartaSans.className} bg-body-color tracking-wide text-white min-h-[100vh]`}
       >
         <StoreProvider>{children}</StoreProvider>
+        <Toaster /> 
       </body>
     </html>
   );

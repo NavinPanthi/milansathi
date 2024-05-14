@@ -101,3 +101,7 @@
   border-radius: 6px;
   font-size: 12px;
 }
+.group {
+  background-color: black;
+  color: white;
+}

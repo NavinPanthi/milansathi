@@ -1,11 +1,7 @@
-"use client";
-
-import { useState } from "react";
-import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 export function DobPicker({ dob, setDob }: any) {
-
+  console.log(dob);
   return (
     <DatePicker
       selected={dob}
