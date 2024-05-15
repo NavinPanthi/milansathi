@@ -1,7 +1,5 @@
 export default function Loading() {
   return (
-    <div>
-      <svg className="animate-spin  text-white h-5 w-5 mr-3" viewBox="0 0 24 24"></svg>
-    </div>
+    <span className="h-5 w-5  rounded-full animate-spin  border-2 border-e-black ring-3 ring-white"></span>
   );
 }

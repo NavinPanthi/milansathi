@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MatrimonialDropdown } from "./matrimonial-dropdown";
@@ -9,15 +9,13 @@ import { ReligionDropdown } from "./religion-dropdown";
 import { CommunityDropdown } from "./community-dropdown";
 import { MotherTongueDropdown } from "./mother-tongue-dropdown";
 import { CityDropdown } from "./city-dropdown";
-import { useRouter } from "next/router";
 import { DobPicker } from "./dob-picker";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { signupActions } from "@/store/signupSlice";
-import Link from "next/link";
 import { signupFormSchema } from "@/lib/validations/form";
 import z from "zod";
 import axios from "axios";
 import Loading from "@/app/loading";
+import { toast } from "sonner";
+
 type User = {
   firstName: string;
   lastName: string;
@@ -32,7 +30,7 @@ type User = {
   email: string;
   password: string;
 };
-export default function SignUpForm() {
+export default function SignUpForm({ setRequestSuccess }: any) {
   const [maritalStatusId, setMaritalStatusId] = useState(0);
   const [cityId, setCityId] = useState(0);
   const [countryId, setCountryId] = useState(0);
@@ -91,7 +89,7 @@ export default function SignUpForm() {
       validatedData.dateOfBirth = simpleDateOfBirth;
       updatedValidatedData = {
         ...validatedData,
-        bio: "User's bio goes here",
+        bio: "User bio goes here",
         image: "image url goes here",
       };
       setMaritalStatusIdError("");
@@ -132,10 +130,10 @@ export default function SignUpForm() {
             case "religionId":
               setReligionIdError(err.message);
               break;
-            case "firstname":
+            case "firstName":
               setFirstnameError(err.message);
               break;
-            case "lastname":
+            case "lastName":
               setLastnameError(err.message);
               break;
             case "email":
@@ -144,7 +142,7 @@ export default function SignUpForm() {
             case "password":
               setPasswordError(err.message);
               break;
-            case "dob":
+            case "dateOfBirth":
               setDobError(err.message);
               break;
             case "gender":
@@ -171,27 +169,27 @@ export default function SignUpForm() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     if (validateForm() && comparePassword()) {
-      console.log(updatedValidatedData.dateOfBirth);
+      setIsLoading(true);
       try {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/users`,
           updatedValidatedData
         );
+        setIsLoading(false);
         if (response.data.status) {
+          setRequestSuccess(true);
+          toast.success("Account created successfully");
           console.log(response.data.data);
         } else {
-          console.log("Error", "Something went wrong");
+          toast.error("Unable to create account");
         }
       } catch (error: any) {
         console.log(error);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
   };
-
-  // useEffect(() => {
   //   console.log(
   //     "gender and dob, maritalstatusid",
   //     gender,
@@ -345,7 +343,6 @@ export default function SignUpForm() {
             <div>
               <Input
                 type="email"
-                className=""
                 placeholder="Email"
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -393,20 +390,16 @@ export default function SignUpForm() {
         <Button
           variant="default"
           onClick={handleSignUp}
+          disabled={isLoading}
           className=" !cursor-pointer h-full w-full bg-red-color/50 hover:bg-red-color/45 text-white"
         >
-          <Link
-            className="w-full"
-            href={updatedValidatedData ? "/auth/sign-in-" : "/auth/sign-up-"}
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center gap-2">
-                <Loading /> <p>Submitting</p>
-              </div>
-            ) : (
-              "Submit"
-            )}
-          </Link>
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2">
+              <Loading /> <p>Submitting</p>
+            </div>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </div>
     </form>

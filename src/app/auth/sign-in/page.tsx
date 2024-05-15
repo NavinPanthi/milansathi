@@ -1,7 +1,18 @@
+"use client";
 import Image from "next/image";
 import LogInForm from "@/components/auth/login-form";
 import Footer from "@/components/home/footer";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 export default function SignIn() {
+  const [requestSuccess, setRequestSuccess] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    if (requestSuccess) {
+      router.push("/dashboard");
+    }
+  }, [requestSuccess]);
+
   return (
     <>
       <div className="flex item-center  justify-center   min-h-[90vh] overflow-y-hidden ">
@@ -14,7 +25,7 @@ export default function SignIn() {
             alt="dede"
           />
           <div className="p-4 py-6 bg-bg-header bg-opacity-50 rounded-b-xl">
-            <LogInForm />
+            <LogInForm setRequestSuccess={setRequestSuccess} />
           </div>
         </div>
       </div>

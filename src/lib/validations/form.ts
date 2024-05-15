@@ -1,8 +1,13 @@
 import { z } from "zod";
 
 export const signinFormSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  email: z.string().email({ message: "Invalid email format" }),
+  password: z
+    .string()
+    .min(8)
+    .refine((value) => value.length >= 8, {
+      message: "Password must be at least 8 char long",
+    }),
 });
 export const signupFormSchema = z.object({
   firstName: z

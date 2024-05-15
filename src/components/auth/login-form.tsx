@@ -4,17 +4,120 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-export default function LogInForm() {
-  const handleLogIn = () => {};
+import z from "zod";
+import axios from "axios";
+import Loading from "@/app/loading";
+import { toast } from "sonner";
+import { signinFormSchema } from "@/lib/validations/form";
+export default function LogInForm({ setRequestSuccess }: any) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  let validatedData: any;
+  const validateForm = () => {
+    try {
+      const formData = {
+        email,
+        password,
+      };
+      validatedData = signinFormSchema.parse(formData);
+      setEmailError("");
+      setPasswordError("");
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          const path = err.path.join(".");
+          switch (path) {
+            case "email":
+              setEmailError(err.message);
+              break;
+            case "password":
+              setPasswordError(err.message);
+              break;
+            default:
+              break;
+          }
+        });
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+      return false;
+    }
+  };
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      setIsLoading(true);
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/users/login`,
+          validatedData
+        );
+        setIsLoading(false);
+        if (response.data.status) {
+          setRequestSuccess(true);
+          toast.success("Login successful.");
+          console.log(response.data.data);
+        } else {
+          toast.error("Unable to log in");
+        }
+      } catch (error: any) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
+          toast(error.response.data.error);
+        } else {
+          toast("An error occurred. Please try again later.");
+        }
+        setIsLoading(false);
+      }
+    }
+  };
   return (
-    <form onSubmit={handleLogIn} className="flex gap-5 flex-col ">
-      <Input type="email" className="" placeholder="Email" />
-      <Input type="password" placeholder="Password" />
+    <form onSubmit={handleSignIn} className="flex gap-5 flex-col ">
+      <div>
+        <Input
+          type="email"
+          placeholder="Email"
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+        />
+        {emailError && (
+          <span className="text-red-color/75 text-sm">{emailError}</span>
+        )}
+      </div>
+      <div>
+        <Input
+          type="password"
+          placeholder="Enter Password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+        />
+        {passwordError && (
+          <span className="text-red-color/75 text-sm">{passwordError}</span>
+        )}
+      </div>
       <Button
         variant="default"
+        onClick={handleSignIn}
+        disabled={isLoading}
         className="px-10 mt-2 flex-1 bg-red-color/50 hover:bg-red-color/45 text-white"
       >
-        Login
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2">
+            <Loading /> <p>Logging in</p>
+          </div>
+        ) : (
+          "Log in"
+        )}
       </Button>
       <div className="flex items-center space-x-2 ">
         <Checkbox id="remember" />
