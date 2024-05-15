@@ -46,7 +46,7 @@ export default function LogInForm({ setRequestSuccess }: any) {
           }
         });
       } else {
-        console.error("An unexpected error occurred:", error);
+        toast.error("An unexpected error occurred.");
       }
       return false;
     }
@@ -57,12 +57,10 @@ export default function LogInForm({ setRequestSuccess }: any) {
       try {
         setIsLoading(true);
         const response = await axios.post(`/api/customer-login`, validatedData);
-        console.log(response.data);
         if (response.data.status && response.data.data !== undefined) {
           setRequestSuccess(true);
-          toast.success("Login successful.");
           dispatch(loginActions.addToStore(response.data.data));
-          console.log(response.data.data);
+          toast.success("Login successful.");
         } else {
           toast.error("Invalid credentials");
         }

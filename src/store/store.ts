@@ -5,6 +5,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
 
 import signupSlice from "./signupSlice";
+import loginSlice from "./loginSlice";
 const persistConfig = {
   key: "root",
   storage,
@@ -12,6 +13,7 @@ const persistConfig = {
 
 const reducer = combineReducers({
   signup: signupSlice.reducer,
+  login: loginSlice.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);

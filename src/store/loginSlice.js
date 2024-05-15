@@ -16,6 +16,12 @@ const loginSlice = createSlice({
       state.loginData.user = {};
       state.loginData.token = {};
     },
+    updateUserImage(state, action) {
+      const { image } = action.payload;
+      return produce(state, (draftState: any) => {
+        draftState.loginData.user.image = image;
+      });
+    },
   },
 });
 export default loginSlice;
