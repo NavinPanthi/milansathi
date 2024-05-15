@@ -9,7 +9,7 @@ export default function SignIn() {
   const router = useRouter();
   useEffect(() => {
     if (requestSuccess) {
-      router.push("/dashboard");
+      router.push("/home");
     }
   }, [requestSuccess]);
 

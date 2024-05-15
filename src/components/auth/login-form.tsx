@@ -3,19 +3,22 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { loginActions } from "@/store/loginSlice";
 import Link from "next/link";
 import z from "zod";
 import axios from "axios";
 import Loading from "@/app/loading";
 import { toast } from "sonner";
 import { signinFormSchema } from "@/lib/validations/form";
+import { useAppDispatch } from "@/store/hooks";
+
 export default function LogInForm({ setRequestSuccess }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const dispatch = useAppDispatch();
   let validatedData: any;
   const validateForm = () => {
     try {
@@ -51,19 +54,17 @@ export default function LogInForm({ setRequestSuccess }: any) {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      setIsLoading(true);
       try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/login`,
-          validatedData
-        );
-        setIsLoading(false);
-        if (response.data.status) {
+        setIsLoading(true);
+        const response = await axios.post(`/api/customer-login`, validatedData);
+        console.log(response.data);
+        if (response.data.status && response.data.data !== undefined) {
           setRequestSuccess(true);
           toast.success("Login successful.");
+          dispatch(loginActions.addToStore(response.data.data));
           console.log(response.data.data);
         } else {
-          toast.error("Unable to log in");
+          toast.error("Invalid credentials");
         }
       } catch (error: any) {
         if (
@@ -75,6 +76,7 @@ export default function LogInForm({ setRequestSuccess }: any) {
         } else {
           toast("An error occurred. Please try again later.");
         }
+      } finally {
         setIsLoading(false);
       }
     }
