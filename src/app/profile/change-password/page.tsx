@@ -52,7 +52,7 @@ export default function ChangePassword() {
   const userToken = useAppSelector(
     (state: any) => state.login.loginData.token.access_token
   );
-  console.log(userToken);
+
   const userId = useAppSelector((state: any) => state.login.loginData.user.id);
   const validationForOldPassword = (oldPassword: string) => {
     if (!oldPassword || oldPassword.length < 8) {

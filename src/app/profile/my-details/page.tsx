@@ -12,14 +12,16 @@ import { useAppDispatch } from "@/store/hooks";
 import { loginActions } from "@/store/loginSlice";
 export default function MyDetails() {
   const [file, setFile] = useState();
+  const [imgFile, setImgFile] = useState<any>();
+  const [userDetails, setUserDetails] = useState<any>({});
   const router = useRouter();
   let firstInitial = "";
   let lastInitial = "";
   let user: any;
   const dispatch = useAppDispatch();
-  const userToken = useAppSelector(
-    (state: any) => state.login.loginData.token.access_token
-  );
+  const userT = useAppSelector((state: any) => state.login.loginData.token);
+  const userRedux = useAppSelector((state: any) => state.login.loginData?.user);
+  const userToken = userT?.access_token;
   const userName = useAppSelector((state: any) => {
     user = state.login.loginData?.user;
     const firstName = user.firstName || "";
@@ -29,13 +31,43 @@ export default function MyDetails() {
     return `${firstName} ${lastName}`;
   });
   const handleImageChange = (e: any) => {
-    setFile(e.target.files[0]);
+    const files = e.target.files[0];
+    setFile(files);
+    if (!files) return;
+    const reader = new FileReader();
+    // Define a callback function to execute once the file has been read
+    reader.onload = () => {
+      setImgFile(reader.result);
+    };
+
+    // Read the contents of the file as a data URL
+    reader.readAsDataURL(files);
   };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${user?.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+        if (response.data.status) {
+          setUserDetails(response.data.data);
+        }
+      } catch (error: any) {
+        toast.error("Something wrong");
+      }
+    };
+    getUser();
+  }, []);
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const formData = new FormData();
     const userId = user?.id || 0;
+
     formData.append("userId", userId);
     if (file !== undefined) {
       formData.append("image", file);
@@ -49,10 +81,15 @@ export default function MyDetails() {
         },
       });
       if (response.data.status) {
+        setUserDetails(response.data.data);
+
+        const store = {
+          user: userRedux || response.data.data,
+          token: userT,
+        };
+
+        dispatch(loginActions.addToStore(store));
         toast.success(response.data.message);
-        let image = response.data.data;
-        console.log(image);
-        dispatch(loginActions.updateUserImage(image));
       }
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.errors) {
@@ -80,15 +117,34 @@ export default function MyDetails() {
 
         <div className="px-3 flex-col mt-20 mb-24  w-full ">
           <div className="my-2 flex flex-col  justify-center gap-3 ">
-            <Avatar className="w-28 h-28 border">
+            <Avatar className="w-32 h-32 border">
               <AvatarImage
-                src={`http://localhost:8000/images/${user?.image}`}
+                src={
+                  imgFile
+                    ? imgFile
+                    : `http://localhost:8000/images/${userDetails?.user?.image}`
+                }
               />
               <AvatarFallback className="gap-1">
                 <span>{firstInitial}</span> <span>{lastInitial}</span>
               </AvatarFallback>
             </Avatar>
-            <input type="file" name="image" onChange={handleImageChange} />
+            <div>
+              <label
+                htmlFor="upload"
+                className="mt-4 text-sm font-light  cursor-pointer"
+              >
+                Change Photo
+              </label>
+              <input
+                type="file"
+                id="upload"
+                accept="/image/*"
+                name="image"
+                hidden
+                onChange={handleImageChange}
+              />
+            </div>
           </div>
         </div>
 

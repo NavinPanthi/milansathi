@@ -7,6 +7,7 @@ import { BsFillSearchHeartFill } from "react-icons/bs";
 import { PiListHeartFill } from "react-icons/pi";
 import Image from "next/image";
 import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const NavItem = ({ href, endpoint, icon, text }: any) => {
   const [hasError, setHasError] = useState(false);
 

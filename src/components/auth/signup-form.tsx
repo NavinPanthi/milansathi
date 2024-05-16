@@ -180,7 +180,6 @@ export default function SignUpForm({ setRequestSuccess }: any) {
         if (response.data.status) {
           setRequestSuccess(true);
           toast.success("Account created successfully");
-          console.log(response.data.data);
         } else {
           toast.error("Unable to create account");
         }
