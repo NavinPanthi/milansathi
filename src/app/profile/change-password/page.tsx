@@ -162,7 +162,7 @@ export default function ChangePassword() {
   };
   return (
     <div className="overflow-y-hidden no-scrollbar pt-2 px-3 sm:pt-4 sm:px-6">
-      <div className=" fixed h-14 flex w-full top-0 items-center my-2 px-3 sm:my-4 ">
+      <div className=" fixed z-10 bg-body-color left-0 px-12 h-16 sm:h-[72px] flex w-full top-0 items-center  ">
         <div
           onClick={() => router.back()}
           className="size-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 cursor-pointer"

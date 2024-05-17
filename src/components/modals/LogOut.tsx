@@ -10,12 +10,11 @@ const LogOut = ({ handleClose }: any) => {
   const router = useRouter();
 
   const handleLogOut = (e: any) => {
-    e.preventDefault();
     if (user) {
       dispatch(loginActions.logOut());
       handleClose();
+      router.push("/home");
       toast.success("Logged Out successfully");
-      router.push("/auth/sign-in");
     } else {
       toast.error("Something went wrong.");
     }

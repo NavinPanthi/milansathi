@@ -56,6 +56,11 @@ export default function MyDetails() {
         );
         if (response.data.status) {
           setUserDetails(response.data.data);
+          const store = {
+            user: response.data.data.user || userRedux,
+            token: userT,
+          };
+          dispatch(loginActions.addToStore(store));
         }
       } catch (error: any) {
         toast.error("Something wrong");
@@ -81,14 +86,8 @@ export default function MyDetails() {
         },
       });
       if (response.data.status) {
-        setUserDetails(response.data.data);
+        // setUserDetails(response.data.data);
 
-        const store = {
-          user: userRedux || response.data.data,
-          token: userT,
-        };
-
-        dispatch(loginActions.addToStore(store));
         toast.success(response.data.message);
       }
     } catch (error: any) {
@@ -103,7 +102,7 @@ export default function MyDetails() {
   return (
     <form method="post" encType="multipart/form-data">
       <div className="overflow-y-hidden no-scrollbar pt-2 px-3 sm:pt-4 sm:px-6">
-        <div className=" fixed h-16 sm:h-[72px] bg-body-color  flex w-full top-0 items-center px-3  ">
+        <div className=" fixed h-16 sm:h-[72px]   flex w-full top-0 items-center px-12  bg-body-color left-0 z-10 ">
           <div
             onClick={() => router.back()}
             className="size-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 cursor-pointer"

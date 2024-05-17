@@ -12,19 +12,10 @@ import LogOut from "@/components/modals/LogOut";
 import { useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import { getUserName } from "@/lib/getUserName";
 export default function Profile() {
-  let firstInitial = "";
-  let lastInitial = "";
-  let user: any;
-  const userName = useAppSelector((state: any) => {
-    user = state.login.loginData?.user;
-    const firstName = user.firstName || "";
-    const lastName = user.lastName || ""; // Assuming lastname is the property name for the last name
-    firstInitial = firstName.charAt(0).toUpperCase();
-    lastInitial = lastName.charAt(0).toUpperCase();
-    return `${firstName} ${lastName}`;
-  });
+  const user = useAppSelector((state: any) => state.login.loginData?.user);
+  const userDetails = getUserName();
 
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] =
     useState(false);
@@ -32,12 +23,7 @@ export default function Profile() {
   const userImg = useAppSelector(
     (state: any) => state.login.loginData.user.image
   );
-  const handleOpen = () => {
-    setIsDeleteAccountModalOpen(true);
-  };
-  const handleClose = () => {
-    setIsDeleteAccountModalOpen(false);
-  };
+
   const handleLogOutModalOpen = () => {
     setIsLogOutModalOpen(true);
   };
@@ -56,24 +42,27 @@ export default function Profile() {
       >
         <div className="my-2 flex flex-col items-center justify-center gap-3 ">
           <Avatar className="w-28 h-28 border">
-            <AvatarImage src={userImg} />
+            <AvatarImage src={`http://localhost:8000/images/${userImg}`} />
             <AvatarFallback className="gap-1">
-              <span>{firstInitial}</span> <span>{lastInitial}</span>
+              <span>{userDetails?.firstInitial}</span>{" "}
+              <span>{userDetails?.lastInitial}</span>
             </AvatarFallback>
           </Avatar>
 
           <div className=" flex gap-3 flex-col items-center">
             <div className="flex items-center gap-4">
-              <p className="font-semibold ">{userName}</p>
+              <p className="font-semibold ">
+                {userDetails?.firstName} {userDetails?.lastName}
+              </p>
               <div className="flex items-center justify-center text-sky-800  px-4  bg-sky-100  h-[30px] rounded-xl">
                 <p className="font-extralight text-xs tracking-wide">
-                  {user.maritalStatus.title}
+                  {user?.maritalStatus?.title}
                 </p>
               </div>
             </div>
             <p className="font-light text-xs tracking-wide  gap-1 flex">
-              {user.diversity.country.title},
-              <span>{user.diversity.city.title}</span>
+              {user?.diversity?.country?.title},
+              <span>{user?.diversity?.city?.title}</span>
             </p>
           </div>
         </div>
