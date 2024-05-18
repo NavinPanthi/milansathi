@@ -91,6 +91,9 @@ export default function SignUpForm({ setRequestSuccess }: any) {
         ...validatedData,
         bio: "User bio goes here",
         image: "image url goes here",
+        astrologicalId: 0,
+        facebookProfileLink: "",
+        contactNumber: "",
       };
       setMaritalStatusIdError("");
       setCityIdError("");

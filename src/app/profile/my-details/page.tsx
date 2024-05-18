@@ -1,5 +1,5 @@
 "use client";
-import { useState, useReducer, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
@@ -10,6 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAppDispatch } from "@/store/hooks";
 import { loginActions } from "@/store/loginSlice";
+import { Input } from "@/components/ui/input";
+import { MatrimonialDropdown } from "@/components/auth/matrimonial-dropdown";
+import { GenderDropdown } from "@/components/auth/gender-dropdown";
+import { CountryDropdown } from "@/components/auth/country-dropdown";
+import { ReligionDropdown } from "@/components/auth/religion-dropdown";
+import { CommunityDropdown } from "@/components/auth/community-dropdown";
+import { MotherTongueDropdown } from "@/components/auth/mother-tongue-dropdown";
+import { CityDropdown } from "@/components/auth/city-dropdown";
+import { DobPicker } from "@/components/auth/dob-picker";
+
 export default function MyDetails() {
   const [file, setFile] = useState();
   const [imgFile, setImgFile] = useState<any>();
@@ -21,6 +31,23 @@ export default function MyDetails() {
   const dispatch = useAppDispatch();
   const userT = useAppSelector((state: any) => state.login.loginData.token);
   const userRedux = useAppSelector((state: any) => state.login.loginData?.user);
+  const [maritalStatusId, setMaritalStatusId] = useState(0);
+  const [cityId, setCityId] = useState(0);
+  const [countryId, setCountryId] = useState(0);
+  const [communityId, setCommunityId] = useState(0);
+  const [motherTongueId, setMotherTongueId] = useState(0);
+  const [religionId, setReligionId] = useState(0);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dob, setDob] = useState<Date>();
+  const [gender, setGender] = useState("");
+  const [bio, setBio] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [astrologicalId, setAstrologicalId] = useState(0);
+  const [dobError, setDobError] = useState("");
+  const [firstnameError, setFirstnameError] = useState("");
+  const [lastnameError, setLastnameError] = useState("");
+
   const userToken = userT?.access_token;
   const userName = useAppSelector((state: any) => {
     user = state.login.loginData?.user;
@@ -68,15 +95,24 @@ export default function MyDetails() {
     };
     getUser();
   }, []);
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  function objectToFormData(obj: any) {
     const formData = new FormData();
-    const userId = user?.id || 0;
-
-    formData.append("userId", userId);
-    if (file !== undefined) {
-      formData.append("image", file);
+    for (const key in obj) {
+      if (obj[key] !== undefined && obj[key] !== null) {
+        formData.append(key, obj[key]);
+      }
     }
+    return formData;
+  }
+  // const handleSubmit = async (e: any) => {};
+  const handleSubmit = async (e: any) => {
+    const data = {
+      userId: user?.id || 0,
+      image: file,
+    };
+    const formData = objectToFormData(data);
+    e.preventDefault();
+    console.log(formData);
     try {
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/users/update-profile`;
 
@@ -87,7 +123,6 @@ export default function MyDetails() {
       });
       if (response.data.status) {
         // setUserDetails(response.data.data);
-
         toast.success(response.data.message);
       }
     } catch (error: any) {
@@ -115,34 +150,110 @@ export default function MyDetails() {
         </div>
 
         <div className="px-3 flex-col mt-20 mb-24  w-full ">
-          <div className="my-2 flex flex-col  justify-center gap-3 ">
-            <Avatar className="w-32 h-32 border">
-              <AvatarImage
-                src={
-                  imgFile
-                    ? imgFile
-                    : `http://localhost:8000/images/${userDetails?.user?.image}`
-                }
-              />
-              <AvatarFallback className="gap-1">
-                <span>{firstInitial}</span> <span>{lastInitial}</span>
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <label
-                htmlFor="upload"
-                className="mt-4 text-sm font-light  cursor-pointer"
-              >
-                Change Photo
-              </label>
-              <input
-                type="file"
-                id="upload"
-                accept="/image/*"
-                name="image"
-                hidden
-                onChange={handleImageChange}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-3  justify-center">
+            <div className="my-2 flex flex-col justify-center items-center md:fixed   gap-3 md:min-w-40">
+              <Avatar className="w-44 h-44 border">
+                <AvatarImage
+                  src={
+                    imgFile
+                      ? imgFile
+                      : `http://localhost:8000/images/${userDetails?.user?.image}`
+                  }
+                />
+                <AvatarFallback className="gap-1">
+                  <span>{firstInitial}</span> <span>{lastInitial}</span>
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex items-start justify-center flex-col ">
+                <div className="flex items-start justify-center flex-col gap-2">
+                  <div className=" flex gap-3 flex-col items-center">
+                    <div className="flex items-center gap-4">
+                      <p className="font-semibold ">
+                        {user?.firstName} {user?.lastName}
+                      </p>
+                      <div className="flex items-center justify-center text-sky-800  px-4  bg-sky-100  h-[30px] rounded-xl">
+                        <p className="font-extralight text-xs tracking-wide">
+                          {user?.maritalStatus?.title}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="font-light text-xs tracking-wide  gap-1 flex">
+                      {user?.diversity?.country?.title},
+                      <span>{user?.diversity?.city?.title}</span>
+                    </p>
+                  </div>
+                  <div className="h-[1px] my-2 w-full bg-white/25"></div>
+
+                  <label
+                    htmlFor="upload"
+                    className="mt-2 px-4 py-2 w-52 flex items-center justify-center  text-xs h-8 border border-body-color rounded-lg  font-light  cursor-pointer"
+                  >
+                    Change Photo
+                  </label>
+                  <Button onClick={handleSubmit} className="text-sm w-52">
+                    Save photo
+                  </Button>
+                </div>
+                <input
+                  type="file"
+                  id="upload"
+                  accept="/image/*"
+                  name="image"
+                  hidden
+                  onChange={handleImageChange}
+                />
+              </div>
+            </div>
+            <div className="fixed bg-white/50 md:ml-60 md:h-[76vh] w-[1px]"></div>
+            <div className="col-span-2 min-h-[100vh] md:ml-80 ml-0 top- no-scrollbar overflow-y-scroll ">
+              <div className=" flex flex-col gap-5"></div>
+              <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-3">
+                <div className="col-span-2">Basic details</div>
+                <div>
+                  <Input
+                    type="text"
+                    placeholder="First name"
+                    onChange={(e: any) => {
+                      setFirstName(e.target.value);
+                    }}
+                  />
+                  {firstnameError && (
+                    <span className="text-red-color/75 text-sm">
+                      {firstnameError}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    type="text"
+                    placeholder="Last name"
+                    onChange={(e: any) => {
+                      setLastName(e.target.value);
+                    }}
+                  />
+                  {lastnameError && (
+                    <span className="text-red-color/75 text-sm">
+                      {lastnameError}
+                    </span>
+                  )}
+                </div>
+                <MatrimonialDropdown
+                  maritalStatusId={maritalStatusId}
+                  setMaritalStatusId={setMaritalStatusId}
+                />
+                <GenderDropdown
+                  selectedGender={gender}
+                  setSelectedGender={setGender}
+                />
+                <div className="flex flex-col">
+                  <DobPicker dob={dob} setDob={setDob} />
+                  {dobError && (
+                    <span className="text-red-color/75 text-sm">
+                      {dobError}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -150,8 +261,7 @@ export default function MyDetails() {
         <div className="fixed sm:px-6 bottom-4 right-0 left-0 ">
           <Button
             variant="default"
-            onClick={handleSubmit}
-            className="  h-full w-full bg-red-color/50 hover:bg-red-color/45 text-white"
+            className="   h-full w-full bg-red-color/50 hover:bg-red-color/45 text-white"
           >
             Submit
           </Button>

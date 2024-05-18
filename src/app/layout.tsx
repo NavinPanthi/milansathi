@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-body-color/80 flex-1 h-full">
       <head>
-        <link rel="icon" href="/pu" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body
         className={`${plusJakartaSans.className} bg-body-color/80 tracking-wide text-white min-h-[100vh]`}
