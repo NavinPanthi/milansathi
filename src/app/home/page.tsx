@@ -6,6 +6,7 @@ import { FaUserLock } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { BsChatHeartFill } from "react-icons/bs";
 import FancyTestimonialsSliderPage from "@/components/home/testimonial";
+import Contact from "@/components/home/contact";
 import Link from "next/link";
 export default function Home() {
   const services = [
@@ -140,6 +141,12 @@ export default function Home() {
             Our Testimonials
           </p>
           <FancyTestimonialsSliderPage />
+        </div>
+        <div className="px-4 pt-8 sm:px-6 lg:px-8  flex justify-between items-center gap-5 sm:gap-0 flex-col ">
+          <p className="font-bold text-3xl mb-10 border-b border-red-color/50">
+            Contact Us
+          </p>
+          <Contact />
         </div>
       </div>
 
