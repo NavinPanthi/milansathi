@@ -61,7 +61,10 @@ export function CommunityDropdown({ communityId, setCommunityId }: any) {
   }, []);
 
   return (
-    <Select onValueChange={(value) => handleCommunitySelect(parseInt(value))}>
+    <Select
+      value={communityId ? communityId.toString() : ""}
+      onValueChange={(value) => handleCommunitySelect(parseInt(value))}
+    >
       <SelectTrigger className="bg-bg-body hover:bg-bg-body relative text-white/75 hover:text-white/50 flex items-center">
         <SelectValue
           className="text-white flex justify-start"

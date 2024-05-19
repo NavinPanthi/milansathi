@@ -192,27 +192,6 @@ export default function SignUpForm({ setRequestSuccess }: any) {
       }
     }
   };
-  //   console.log(
-  //     "gender and dob, maritalstatusid",
-  //     gender,
-  //     dob,
-  //     maritalStatusId,
-  //     countryId,
-  //     cityId,
-  //     communityId,
-  //     motherTongueId,
-  //     religionId
-  //   );
-  // }, [
-  //   gender,
-  //   dob,
-  //   maritalStatusId,
-  //   countryId,
-  //   cityId,
-  //   communityId,
-  //   religionId,
-  //   motherTongueId,
-  // ]);
 
   return (
     <form onSubmit={handleSignUp} className="flex gap-4 flex-col ">

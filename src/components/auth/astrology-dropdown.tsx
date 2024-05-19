@@ -59,7 +59,10 @@ export function AstrologyDropdown({ astrologicalId, setAstrologicalId }: any) {
   }, []);
 
   return (
-    <Select onValueChange={(value) => handleAstrologySelect(parseInt(value))}>
+    <Select
+      value={astrologicalId ? astrologicalId.toString() : ""}
+      onValueChange={(value) => handleAstrologySelect(parseInt(value))}
+    >
       <SelectTrigger className="bg-bg-body hover:bg-bg-body relative text-white/75 hover:text-white/50 flex items-center">
         <SelectValue
           className="text-white flex justify-start"

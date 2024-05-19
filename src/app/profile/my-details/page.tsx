@@ -19,6 +19,9 @@ import { CommunityDropdown } from "@/components/auth/community-dropdown";
 import { MotherTongueDropdown } from "@/components/auth/mother-tongue-dropdown";
 import { CityDropdown } from "@/components/auth/city-dropdown";
 import { DobPicker } from "@/components/auth/dob-picker";
+import { AstrologyDropdown } from "@/components/auth/astrology-dropdown";
+import { Textarea } from "@/components/ui/textarea";
+import Loading from "@/app/loading";
 
 export default function MyDetails() {
   const [file, setFile] = useState();
@@ -28,27 +31,6 @@ export default function MyDetails() {
   let firstInitial = "";
   let lastInitial = "";
   let user: any;
-  const dispatch = useAppDispatch();
-  const userT = useAppSelector((state: any) => state.login.loginData.token);
-  const userRedux = useAppSelector((state: any) => state.login.loginData?.user);
-  const [maritalStatusId, setMaritalStatusId] = useState(0);
-  const [cityId, setCityId] = useState(0);
-  const [countryId, setCountryId] = useState(0);
-  const [communityId, setCommunityId] = useState(0);
-  const [motherTongueId, setMotherTongueId] = useState(0);
-  const [religionId, setReligionId] = useState(0);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [dob, setDob] = useState<Date>();
-  const [gender, setGender] = useState("");
-  const [bio, setBio] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
-  const [astrologicalId, setAstrologicalId] = useState(0);
-  const [dobError, setDobError] = useState("");
-  const [firstnameError, setFirstnameError] = useState("");
-  const [lastnameError, setLastnameError] = useState("");
-
-  const userToken = userT?.access_token;
   const userName = useAppSelector((state: any) => {
     user = state.login.loginData?.user;
     const firstName = user.firstName || "";
@@ -57,6 +39,45 @@ export default function MyDetails() {
     lastInitial = lastName.charAt(0).toUpperCase();
     return `${firstName} ${lastName}`;
   });
+  const userToken = useAppSelector(
+    (state: any) => state.login.loginData?.token.access_token
+  );
+  const dispatch = useAppDispatch();
+  const userT = useAppSelector((state: any) => state.login.loginData.token);
+  const userRedux = useAppSelector((state: any) => state.login.loginData?.user);
+  const [maritalStatusId, setMaritalStatusId] = useState(
+    user?.maritalStatus.id || 0
+  );
+  const [cityId, setCityId] = useState(user?.diversity?.city?.id || 0);
+  const [countryId, setCountryId] = useState(user?.diversity?.country?.id || 0);
+  const [communityId, setCommunityId] = useState(
+    user?.diversity?.community?.id || 0
+  );
+  const [motherTongueId, setMotherTongueId] = useState(
+    user?.diversity?.motherTongue?.id || 0
+  );
+  const [religionId, setReligionId] = useState(
+    user?.diversity?.religion?.id || 0
+  );
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
+  const parsedDate = new Date(user?.dateOfBirth);
+  const [dob, setDob] = useState<Date>(parsedDate || new Date());
+  const [gender, setGender] = useState(user?.gender || "");
+  const [bio, setBio] = useState(user?.bio || "");
+  const [contactNumber, setContactNumber] = useState(
+    user?.additionalDetail?.contactNumber || ""
+  );
+  const [mediaLink, setMediaLink] = useState(
+    user?.additionalDetail?.facebookProfileLink || ""
+  );
+  const [astrologicalId, setAstrologicalId] = useState(
+    user?.additionalDetail.astrology?.id || 0
+  );
+  const [dobError, setDobError] = useState("");
+  const [firstnameError, setFirstnameError] = useState("");
+  const [lastnameError, setLastnameError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const handleImageChange = (e: any) => {
     const files = e.target.files[0];
     setFile(files);
@@ -105,7 +126,7 @@ export default function MyDetails() {
     return formData;
   }
   // const handleSubmit = async (e: any) => {};
-  const handleSubmit = async (e: any) => {
+  const handleSubmitPhoto = async (e: any) => {
     const data = {
       userId: user?.id || 0,
       image: file,
@@ -122,7 +143,6 @@ export default function MyDetails() {
         },
       });
       if (response.data.status) {
-        // setUserDetails(response.data.data);
         toast.success(response.data.message);
       }
     } catch (error: any) {
@@ -134,6 +154,61 @@ export default function MyDetails() {
       }
     }
   };
+
+  const handleSaveDetails = async (e: React.FormEvent) => {
+    const updatingData = {
+      userId: user?.id || 0,
+      firstName,
+      lastName,
+      maritalStatusId,
+      gender,
+      dateOfBirth: new Date(dob).toISOString().split("T")[0],
+      religionId,
+      cityId,
+      countryId,
+      motherTongueId,
+      communityId,
+      bio: bio || "",
+      astrologicalId,
+      facebookProfileLink: mediaLink || "",
+      contactNumber: contactNumber || "",
+    };
+
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/update-details`,
+        updatingData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      setIsLoading(false);
+      if (response.data.status) {
+        const store = {
+          user: response.data.data.user || userRedux,
+          token: userT,
+        };
+        dispatch(loginActions.addToStore(store));
+        toast.success("Profile updated successfully");
+      } else {
+        toast.error("Unable to Update");
+      }
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.errors) {
+        const errorMessage = error.response.data.errors[0].msg;
+        toast.error(errorMessage);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <form method="post" encType="multipart/form-data">
       <div className="overflow-y-hidden no-scrollbar pt-2 px-3 sm:pt-4 sm:px-6">
@@ -149,7 +224,7 @@ export default function MyDetails() {
           </p>
         </div>
 
-        <div className="px-3 flex-col mt-20 mb-24  w-full ">
+        <div className="sm:px-3 flex-col mt-20 mb-24  w-full ">
           <div className="grid grid-cols-1 md:grid-cols-3  justify-center">
             <div className="my-2 flex flex-col justify-center items-center md:fixed   gap-3 md:min-w-40">
               <Avatar className="w-44 h-44 border">
@@ -178,8 +253,11 @@ export default function MyDetails() {
                       </div>
                     </div>
                     <p className="font-light text-xs tracking-wide  gap-1 flex">
-                      {user?.diversity?.country?.title},
-                      <span>{user?.diversity?.city?.title}</span>
+                      {user?.email}
+                    </p>
+
+                    <p className="font-light text-xs tracking-wide max-w-48 gap-1 flex">
+                      {user?.bio}
                     </p>
                   </div>
                   <div className="h-[1px] my-2 w-full bg-white/25"></div>
@@ -190,7 +268,7 @@ export default function MyDetails() {
                   >
                     Change Photo
                   </label>
-                  <Button onClick={handleSubmit} className="text-sm w-52">
+                  <Button onClick={handleSubmitPhoto} className="text-sm w-52">
                     Save photo
                   </Button>
                 </div>
@@ -205,65 +283,172 @@ export default function MyDetails() {
               </div>
             </div>
             <div className="fixed bg-white/50 md:ml-60 md:h-[76vh] w-[1px]"></div>
-            <div className="col-span-2 min-h-[100vh] md:ml-80 ml-0 top- no-scrollbar overflow-y-scroll ">
-              <div className=" flex flex-col gap-5"></div>
-              <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-3">
-                <div className="col-span-2">Basic details</div>
-                <div>
+            <div className="col-span-2 min-h-[100vh] w-full md:ml-[280px] lg:ml-[300px] ml-0 top- no-scrollbar overflow-y-scroll ">
+              <div className=" flex flex-col gap-5">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-2 sm:gap-3 ">
+                  <div className="col-span-2 font-bold">Basic details</div>
+                  <div className="flex items-center text-sm sm:text-md">
+                    First Name :
+                  </div>
+                  <div>
+                    <Input
+                      type="text"
+                      placeholder="First name"
+                      value={firstName}
+                      onChange={(e: any) => {
+                        setFirstName(e.target.value);
+                      }}
+                      required
+                    />
+                    {firstnameError && (
+                      <span className="text-red-color/75 text-sm">
+                        {firstnameError}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-sm sm:text-md">
+                    Last Name :
+                  </div>
+                  <div>
+                    <Input
+                      type="text"
+                      placeholder="Last name"
+                      value={lastName}
+                      required
+                      onChange={(e: any) => {
+                        setLastName(e.target.value);
+                      }}
+                    />
+                    {lastnameError && (
+                      <span className="text-red-color/75 text-sm">
+                        {lastnameError}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-sm sm:text-md">
+                    Status
+                  </div>
+                  <MatrimonialDropdown
+                    maritalStatusId={maritalStatusId}
+                    setMaritalStatusId={setMaritalStatusId}
+                  />
+                  <div className="flex items-center text-sm sm:text-md">
+                    Gender :
+                  </div>
+                  <GenderDropdown
+                    selectedGender={gender}
+                    setSelectedGender={setGender}
+                  />
+                  <div className="flex items-center text-sm sm:text-md">
+                    Date of birth :
+                  </div>
+                  <div className="flex flex-col">
+                    <DobPicker dob={dob} setDob={setDob} />
+                    {dobError && (
+                      <span className="text-red-color/75 text-sm">
+                        {dobError}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className=" bg-white/25 w-full h-[1px]"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-2 sm:gap-3 ">
+                  <div className="col-span-2 font-bold">Diversity details</div>
+                  <div className="flex items-center text-sm sm:text-md">
+                    Country :
+                  </div>
+                  <CountryDropdown
+                    countryId={countryId}
+                    setCountryId={setCountryId}
+                  />
+                  <div className="flex items-center text-sm sm:text-md">
+                    Religion :
+                  </div>
+                  <ReligionDropdown
+                    religionId={religionId}
+                    setReligionId={setReligionId}
+                  />
+                  <div className="flex items-center text-sm sm:text-md">
+                    Community :
+                  </div>
+                  <CommunityDropdown
+                    communityId={communityId}
+                    setCommunityId={setCommunityId}
+                  />
+                  <div className="flex items-center text-sm sm:text-md">
+                    Mother Tongue :
+                  </div>
+                  <MotherTongueDropdown
+                    motherTongueId={motherTongueId}
+                    setMotherTongueId={setMotherTongueId}
+                  />
+                  <div className="flex items-center text-sm sm:text-md">
+                    Date of birth :
+                  </div>
+                  <CityDropdown cityId={cityId} setCityId={setCityId} />
+                </div>
+                <div className=" bg-white/25 w-full h-[1px]"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-2 sm:gap-3 ">
+                  <div className="col-span-2">Additional details</div>
+                  <div className="flex items-center text-sm sm:text-md">
+                    Astrology :
+                  </div>
+                  <AstrologyDropdown
+                    astrologicalId={astrologicalId}
+                    setAstrologicalId={setAstrologicalId}
+                  />
+                  <div className="flex items-center text-sm sm:text-md">
+                    Social media :
+                  </div>
                   <Input
                     type="text"
-                    placeholder="First name"
-                    onChange={(e: any) => {
-                      setFirstName(e.target.value);
+                    placeholder="Attach a link"
+                    value={mediaLink}
+                    onChange={(e) => {
+                      setMediaLink(e.target.value);
                     }}
                   />
-                  {firstnameError && (
-                    <span className="text-red-color/75 text-sm">
-                      {firstnameError}
-                    </span>
-                  )}
-                </div>
-                <div>
+                  <div className="flex items-center text-sm sm:text-md">
+                    Contact number :
+                  </div>
                   <Input
                     type="text"
-                    placeholder="Last name"
-                    onChange={(e: any) => {
-                      setLastName(e.target.value);
+                    placeholder="Contact number"
+                    value={contactNumber}
+                    onChange={(e) => {
+                      setContactNumber(e.target.value);
                     }}
                   />
-                  {lastnameError && (
-                    <span className="text-red-color/75 text-sm">
-                      {lastnameError}
-                    </span>
-                  )}
-                </div>
-                <MatrimonialDropdown
-                  maritalStatusId={maritalStatusId}
-                  setMaritalStatusId={setMaritalStatusId}
-                />
-                <GenderDropdown
-                  selectedGender={gender}
-                  setSelectedGender={setGender}
-                />
-                <div className="flex flex-col">
-                  <DobPicker dob={dob} setDob={setDob} />
-                  {dobError && (
-                    <span className="text-red-color/75 text-sm">
-                      {dobError}
-                    </span>
-                  )}
+                  <div className="flex items-center text-sm sm:text-md">
+                    Bio :
+                  </div>
+                  <Textarea
+                    value={bio}
+                    onChange={(e: any) => {
+                      e.preventDefault();
+                      setBio(e.target.value);
+                    }}
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="fixed sm:px-6 bottom-4 right-0 left-0 ">
+        <div className="fixed z-10 px-2 sm:px-6 h-[48px] bg-body-color/70 pb-0  flex items-center justify-center bottom-0 right-0 left-0 ">
           <Button
             variant="default"
-            className="   h-full w-full bg-red-color/50 hover:bg-red-color/45 text-white"
+            className="   h-[36px] w-full bg-red-color/75 hover:bg-red-color/50 text-white"
+            disabled={firstName === "" || lastName === "" || dob === undefined}
+            onClick={handleSaveDetails}
           >
-            Submit
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loading /> <p>Saving details</p>
+              </div>
+            ) : (
+              "Save details"
+            )}
           </Button>
         </div>
       </div>

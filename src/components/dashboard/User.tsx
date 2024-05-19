@@ -1,12 +1,17 @@
+"use client";
 import React from "react";
 import { calculateAge } from "@/lib/calculateAge";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "@/components/ui/button";
-
+import { useRouter } from "next/navigation";
 const User = ({ user, bio }: any): any => {
   const age = calculateAge(user?.dateOfBirth);
+  const router = useRouter();
   return (
-    <div className="flex flex-col border border-white/10 text-white shadow-box rounded-lg gap-3 p-4">
+    <div
+      className="flex flex-col cursor-pointer   text-white shadow-box rounded-lg gap-3 p-4"
+      onClick={() => router.push(`/user?id=${user?.id}`)}
+    >
       <div className="flex flex-row justify-between items-center">
         <div className="flex row justify-center items-center gap-4">
           <Avatar className="border h-32 w-32 flex items-center justify-center rounded-full">

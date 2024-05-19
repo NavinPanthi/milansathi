@@ -67,6 +67,8 @@ export function MotherTongueDropdown({
 
   return (
     <Select
+    value={motherTongueId ? motherTongueId.toString() : ""}
+
       onValueChange={(value) => handleMotherTongueSelect(parseInt(value))}
     >
       <SelectTrigger className="bg-bg-body hover:bg-bg-body relative text-white/75 hover:text-white/50 flex items-center">

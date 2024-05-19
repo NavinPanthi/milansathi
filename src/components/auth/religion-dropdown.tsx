@@ -27,6 +27,7 @@ export function ReligionDropdown({ religionId, setReligionId }: any) {
   };
 
   const handleSearch = (e: any) => {
+    
     let searchTerm = e.target.value.trim().toLowerCase();
     const wordsArray = searchTerm.split(/\s+/);
     if (religions) {
@@ -61,7 +62,8 @@ export function ReligionDropdown({ religionId, setReligionId }: any) {
   }, []);
 
   return (
-    <Select onValueChange={(value) => handleReligionSelect(parseInt(value))}>
+    <Select     value={religionId ? religionId.toString() : ""}
+    onValueChange={(value) => handleReligionSelect(parseInt(value))}>
       <SelectTrigger className="bg-bg-body hover:bg-bg-body relative text-white/75 hover:text-white/50 flex items-center">
         <SelectValue
           className="text-white flex justify-start"

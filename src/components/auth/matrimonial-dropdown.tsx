@@ -69,7 +69,7 @@ export function MatrimonialDropdown({
 
   return (
     <Select
-      // value={maritalStatusId.toString()}
+      value={maritalStatusId ? maritalStatusId.toString() : ""}
       onValueChange={(value) => handleMatrimonialStatusSelect(parseInt(value))}
     >
       <SelectTrigger className="bg-bg-body hover:bg-bg-body relative text-white/75 hover:text-white/50 flex items-center">

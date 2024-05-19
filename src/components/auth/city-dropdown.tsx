@@ -59,7 +59,10 @@ export function CityDropdown({ cityId, setCityId }: any) {
   }, []);
 
   return (
-    <Select onValueChange={(value) => handleCitySelect(parseInt(value))}>
+    <Select
+      value={cityId ? cityId.toString() : ""}
+      onValueChange={(value) => handleCitySelect(parseInt(value))}
+    >
       <SelectTrigger className="bg-bg-body hover:bg-bg-body relative text-white/75 hover:text-white/50 flex items-center">
         <SelectValue
           className="text-white flex justify-start"
